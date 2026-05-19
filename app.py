@@ -2,258 +2,70 @@ import streamlit as st
 import pandas as pd
 from itertools import combinations
 from io import BytesIO
-import base64
 
 # ============================================================
 # PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
-    page_title="Cashfree Reconciliation Suite",
-    page_icon="💳",
+    page_title="Cashfree Reconciliation",
     layout="wide"
 )
 
 # ============================================================
-# ADVANCED UI CSS (Merged with Modern Design)
+# ADVANCED UI CSS
 # ============================================================
 
 st.markdown("""
 <style>
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
-
-/* Main container styling */
-.stApp {
-    background: linear-gradient(135deg, #f5f7fb 0%, #f0f4fa 100%);
-}
 
 .main {
-    background-color: transparent;
-    font-family: 'Inter', sans-serif;
-}
-
-/* Hero Section */
-.hero-title {
-    background: linear-gradient(135deg, #1A2A3F, #2C3E66);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.3px;
-}
-
-.hero-subtitle {
-    color: #5b6e8c;
-    font-size: 1rem;
-    margin-bottom: 2rem;
-}
-
-/* Modern Card Styling */
-.modern-card {
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 28px;
-    padding: 1.5rem;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.05);
-    border: 1px solid rgba(230, 240, 255, 0.8);
-    margin-bottom: 1.5rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.modern-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 35px rgba(0,0,0,0.08);
-}
-
-/* Upload Section */
-.upload-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.upload-box {
-    background: white;
-    border-radius: 24px;
-    padding: 1.8rem;
-    text-align: center;
-    border: 2px dashed #e0e8f2;
-    transition: all 0.2s;
-}
-
-.upload-box:hover {
-    border-color: #2c7da0;
-    background: #fafcff;
-}
-
-.upload-icon {
-    font-size: 2.5rem;
-    color: #2c7da0;
-    margin-bottom: 1rem;
-}
-
-/* Metric Cards */
-.metric-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
+    background-color: #f5f7fb;
 }
 
 .metric-card {
-    background: linear-gradient(135deg, #ffffff, #f8fafd);
-    padding: 1.8rem;
-    border-radius: 24px;
+    background: linear-gradient(135deg, #ffffff, #f0f2f6);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: 1px solid #eef2f8;
-    transition: all 0.2s;
-}
-
-.metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
-
-.metric-icon {
-    font-size: 2.2rem;
-    margin-bottom: 0.8rem;
+    margin-bottom: 10px;
 }
 
 .metric-title {
-    font-size: 0.9rem;
+    font-size: 18px;
+    color: #555;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #5e6f8d;
-    margin-bottom: 0.5rem;
 }
 
 .metric-value {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: #1e2f41;
-    line-height: 1.1;
+    font-size: 38px;
+    font-weight: 700;
+    color: #111;
 }
 
-/* Button Styling */
-.stButton > button {
-    background: linear-gradient(95deg, #1c3f5c, #2c6285);
-    border: none;
-    color: white;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border-radius: 40px;
-    font-size: 1rem;
-    transition: all 0.2s;
+.stButton>button {
     width: 100%;
-    font-family: 'Inter', sans-serif;
+    border-radius: 10px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-.stButton > button:hover {
-    background: linear-gradient(95deg, #153448, #235574);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(28,63,92,0.3);
-}
-
-/* Selectbox Styling */
-.stSelectbox label {
-    font-weight: 600;
-    color: #2c3e66;
-    font-size: 0.85rem;
-}
-
-.stSelectbox > div {
-    border-radius: 16px;
-}
-
-/* DataFrame Styling */
 div[data-testid="stDataFrame"] {
-    border-radius: 20px;
+    border-radius: 14px;
     overflow: hidden;
     border: 1px solid #e6e6e6;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Expander Styling */
-.streamlit-expanderHeader {
-    background: #f8fafd;
-    border-radius: 12px;
-    font-weight: 600;
-    color: #2c3e66;
-}
-
-/* Download Buttons */
-.download-section {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-/* Badge Colors */
-.exact-badge {
-    background: #e1f7e6;
-    color: #1e7e34;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.75rem;
-}
-
-.split-badge {
-    background: #fff1cf;
-    color: #b66d0d;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.75rem;
-}
-
-.unmatched-badge {
-    background: #ffe8e3;
-    color: #bc3900;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.75rem;
-}
-
-/* Divider */
-.custom-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #2c7da0, transparent);
-    margin: 2rem 0;
-}
-
-/* Footer */
-.footer {
-    text-align: center;
-    padding: 2rem;
-    color: #8ba0bc;
-    font-size: 0.8rem;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# HERO SECTION
+# TITLE
 # ============================================================
 
-st.markdown("""
-<div style="text-align: center; margin-bottom: 2rem;">
-    <h1 class="hero-title">
-        <span style="background: linear-gradient(135deg, #1A2A3F, #2C3E66); -webkit-background-clip: text; background-clip: text; color: transparent;">
-            💳 Cashfree Reconciliation Studio
-        </span>
-    </h1>
-    <p class="hero-subtitle">
-        Smart matching — exact & split reconciliation · Advanced dashboard
-    </p>
-</div>
-""", unsafe_allow_html=True)
+st.title("💳 Cashfree vs Internal File Reconciliation Dashboard")
 
 # ============================================================
 # HELPERS
@@ -269,8 +81,13 @@ def clean_mobile(x):
         x = str(x)
         x = x.replace(".0", "").replace(" ", "").replace("-", "").replace("+91", "")
         x = ''.join(filter(str.isdigit, x))
+
         if len(x) > 10:
             x = x[-10:]
+        elif len(x) < 10 and len(x) > 0:
+            # Handle cases where leading zeros might be missing
+            x = x.zfill(10)
+
         return x
     except:
         return ""
@@ -283,53 +100,39 @@ def clean_amount(x):
 
 def clean_date(x):
     try:
-        return pd.to_datetime(
-            x,
-            dayfirst=True,
-            errors="coerce"
-        ).date()
+        # Try multiple date formats
+        if pd.isna(x):
+            return None
+        
+        # If it's already a datetime
+        if isinstance(x, (pd.Timestamp, pd.datetime)):
+            return x.date()
+        
+        # Try different formats
+        for date_format in ["%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%m/%d/%Y"]:
+            try:
+                return pd.to_datetime(x, format=date_format).date()
+            except:
+                continue
+        
+        # Last resort - let pandas infer
+        return pd.to_datetime(x, dayfirst=True, errors="coerce").date()
     except:
         return None
 
 # ============================================================
-# FILE UPLOAD SECTION (Modern Grid)
+# FILE UPLOAD
 # ============================================================
 
-st.markdown('<div class="upload-container">', unsafe_allow_html=True)
+cashfree_file = st.file_uploader(
+    "📤 Upload Cashfree File",
+    type=["xlsx", "csv"]
+)
 
-col1, col2 = st.columns(2)
-
-with col1:
-    with st.container():
-        st.markdown("""
-        <div class="upload-box">
-            <div class="upload-icon">📤</div>
-            <h3 style="margin-bottom: 1rem;">Cashfree File</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        cashfree_file = st.file_uploader(
-            "Upload Cashfree File",
-            type=["xlsx", "csv"],
-            key="cashfree",
-            label_visibility="collapsed"
-        )
-
-with col2:
-    with st.container():
-        st.markdown("""
-        <div class="upload-box">
-            <div class="upload-icon">📥</div>
-            <h3 style="margin-bottom: 1rem;">Internal File</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        acme_file = st.file_uploader(
-            "Upload Internal File",
-            type=["xlsx", "csv"],
-            key="internal",
-            label_visibility="collapsed"
-        )
-
-st.markdown('</div>', unsafe_allow_html=True)
+acme_file = st.file_uploader(
+    "📤 Upload Internal File",
+    type=["xlsx", "csv"]
+)
 
 # ============================================================
 # MAIN PROCESS
@@ -341,64 +144,100 @@ if cashfree_file and acme_file:
     acme = read_file(acme_file)
 
     st.success("✅ Files Uploaded Successfully")
-
-    # ========================================================
-    # COLUMN MAPPING UI (Modern Styled)
-    # ========================================================
-
-    with st.container():
-        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown("### 🧩 Column Mapping")
-        st.markdown("---")
-
+    
+    # Show sample data
+    with st.expander("📊 Preview Uploaded Data"):
         col1, col2 = st.columns(2)
-
         with col1:
-            st.markdown("#### 📊 Cashfree Columns")
-            cf_phone_col = st.selectbox(
-                "Phone Column",
-                cashfree.columns,
-                key="cf_phone"
-            )
-            cf_amount_col = st.selectbox(
-                "Amount Column",
-                cashfree.columns,
-                key="cf_amount"
-            )
-            cf_date_col = st.selectbox(
-                "Date Column",
-                cashfree.columns,
-                key="cf_date"
-            )
-
+            st.write("**Cashfree File (First 5 rows)**")
+            st.dataframe(cashfree.head())
         with col2:
-            st.markdown("#### 🏢 Internal File Columns")
-            ac_phone_col = st.selectbox(
-                "Phone Column",
-                acme.columns,
-                key="ac_phone"
-            )
-            ac_amount_col = st.selectbox(
-                "Amount Column",
-                acme.columns,
-                key="ac_amount"
-            )
-            ac_date_col = st.selectbox(
-                "Date Column",
-                acme.columns,
-                key="ac_date"
-            )
+            st.write("**Internal File (First 5 rows)**")
+            st.dataframe(acme.head())
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    # ========================================================
+    # COLUMN MAPPING UI
+    # ========================================================
+
+    st.subheader("🧩 Column Mapping")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.markdown("### Cashfree Columns")
+
+        cf_phone_col = st.selectbox(
+            "Phone Column",
+            cashfree.columns
+        )
+
+        cf_amount_col = st.selectbox(
+            "Amount Column",
+            cashfree.columns
+        )
+
+        cf_date_col = st.selectbox(
+            "Date Column",
+            cashfree.columns
+        )
+
+    with col2:
+
+        st.markdown("### Internal File Columns")
+
+        ac_phone_col = st.selectbox(
+            "Phone Column ",
+            acme.columns
+        )
+
+        ac_amount_col = st.selectbox(
+            "Amount Column ",
+            acme.columns
+        )
+
+        ac_date_col = st.selectbox(
+            "Date Column ",
+            acme.columns
+        )
+    
+    # Matching tolerance options
+    st.subheader("⚙️ Matching Settings")
+    
+    match_settings = st.columns(3)
+    with match_settings[0]:
+        amount_tolerance = st.number_input(
+            "Amount Tolerance (₹)",
+            min_value=0.0,
+            max_value=100.0,
+            value=0.0,
+            step=0.5,
+            help="Allow small differences in amount (e.g., 0.5 for 50 paise difference)"
+        )
+    
+    with match_settings[1]:
+        date_tolerance_days = st.number_input(
+            "Date Tolerance (Days)",
+            min_value=0,
+            max_value=30,
+            value=1,
+            help="Allow date differences within X days"
+        )
+    
+    with match_settings[2]:
+        enable_split_matching = st.checkbox(
+            "Enable Split Matching",
+            value=True,
+            help="Match one Cashfree transaction with multiple internal transactions"
+        )
 
     # ========================================================
     # AUTO MAPPING BUTTON
     # ========================================================
 
     start_mapping = st.button(
-        "🚀 Start Auto Mapping & Reconciliation",
-        type="primary",
-        use_container_width=True
+        "🚀 Start Auto Mapping",
+        type="primary"
     )
 
     # ========================================================
@@ -407,7 +246,8 @@ if cashfree_file and acme_file:
 
     if start_mapping:
 
-        with st.spinner("🔄 Processing reconciliation..."):
+        with st.spinner("Processing reconciliation..."):
+            
             # ====================================================
             # STANDARDIZE DATA
             # ====================================================
@@ -438,38 +278,41 @@ if cashfree_file and acme_file:
 
             acme["USED"] = False
 
-            # ====================================================
-            # DEBUG DATE CHECK (Collapsible)
-            # ====================================================
-
-            with st.expander("🔍 Debug Date Parsing (Click to expand)"):
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**Cashfree Date Preview**")
-                    st.dataframe(
-                        cashfree[[cf_date_col, "MATCH_DATE"]].head(),
-                        use_container_width=True
-                    )
-                with col2:
-                    st.markdown("**Internal Date Preview**")
-                    st.dataframe(
-                        acme[[ac_date_col, "MATCH_DATE"]].head(),
-                        use_container_width=True
-                    )
+            # Remove rows with missing critical data
+            cashfree_clean = cashfree[
+                (cashfree["Customer Phone"] != "") & 
+                (cashfree["Amount"] > 0)
+            ].copy()
+            
+            acme_clean = acme[
+                (acme["mobile"] != "") & 
+                (acme["payment_amount"] > 0)
+            ].copy()
 
             # ====================================================
-            # MATCHING LOGIC
+            # DEBUG DATE CHECK
+            # ====================================================
+
+            with st.expander("🔍 Debug Data Processing"):
+                st.write("**Cashfree Processed Data Sample:**")
+                st.dataframe(cashfree_clean[[cf_phone_col, cf_amount_col, cf_date_col, "Customer Phone", "Amount", "MATCH_DATE"]].head())
+                
+                st.write("**Internal Processed Data Sample:**")
+                st.dataframe(acme_clean[[ac_phone_col, ac_amount_col, ac_date_col, "mobile", "payment_amount", "MATCH_DATE"]].head())
+
+            # ====================================================
+            # MATCHING LOGIC (IMPROVED)
             # ====================================================
 
             results = []
+
             exact_match_count = 0
+            fuzzy_match_count = 0
             split_match_count = 0
             unmatched_count = 0
 
-            progress_bar = st.progress(0)
-            total_rows = len(cashfree)
+            for idx, cf_row in cashfree_clean.iterrows():
 
-            for idx, (_, cf_row) in enumerate(cashfree.iterrows()):
                 phone = cf_row["Customer Phone"]
                 amount = cf_row["Amount"]
                 date = cf_row["MATCH_DATE"]
@@ -477,227 +320,307 @@ if cashfree_file and acme_file:
                 matched = False
 
                 # =================================================
-                # EXACT MATCH
+                # 1. EXACT MATCH (All fields match exactly)
                 # =================================================
 
-                exact_matches = acme[
-                    (acme["mobile"] == phone) &
-                    (acme["payment_amount"] == amount) &
-                    (acme["MATCH_DATE"] == date) &
-                    (acme["USED"] == False)
+                exact_matches = acme_clean[
+                    (acme_clean["mobile"] == phone) &
+                    (acme_clean["payment_amount"] == amount) &
+                    (acme_clean["MATCH_DATE"] == date) &
+                    (acme_clean["USED"] == False)
                 ]
 
                 if not exact_matches.empty:
+
                     idx_match = exact_matches.index[0]
-                    acme.loc[idx_match, "USED"] = True
+
+                    acme_clean.loc[idx_match, "USED"] = True
 
                     merged = {}
+
                     for col in cashfree.columns:
                         merged[f"CF_{col}"] = cf_row[col]
+
                     for col in acme.columns:
                         merged[f"INTERNAL_{col}"] = exact_matches.iloc[0][col]
+
                     merged["MATCH_TYPE"] = "EXACT MATCH"
+                    merged["MATCH_SCORE"] = "100%"
 
                     results.append(merged)
+
                     exact_match_count += 1
                     matched = True
 
                 # =================================================
-                # SPLIT MATCH
+                # 2. FUZZY MATCH (With tolerance)
                 # =================================================
 
-                if not matched:
-                    candidates = acme[
-                        (acme["mobile"] == phone) &
-                        (acme["MATCH_DATE"] == date) &
-                        (acme["USED"] == False)
+                if not matched and (amount_tolerance > 0 or date_tolerance_days > 0):
+                    
+                    # Find candidates with phone match
+                    fuzzy_candidates = acme_clean[
+                        (acme_clean["mobile"] == phone) &
+                        (acme_clean["USED"] == False)
+                    ]
+                    
+                    if not fuzzy_candidates.empty:
+                        
+                        best_match = None
+                        best_score = 0
+                        
+                        for candidate_idx, candidate in fuzzy_candidates.iterrows():
+                            score = 0
+                            
+                            # Check amount difference
+                            amount_diff = abs(candidate["payment_amount"] - amount)
+                            if amount_diff <= amount_tolerance:
+                                score += 50
+                            
+                            # Check date difference
+                            if date and candidate["MATCH_DATE"]:
+                                date_diff = abs((date - candidate["MATCH_DATE"]).days)
+                                if date_diff <= date_tolerance_days:
+                                    score += 50
+                            elif not date and not candidate["MATCH_DATE"]:
+                                score += 50  # Both have no date
+                            
+                            if score > best_score:
+                                best_score = score
+                                best_match = candidate_idx
+                        
+                        if best_match and best_score >= 70:  # At least 70% match
+                            acme_clean.loc[best_match, "USED"] = True
+                            
+                            merged = {}
+                            for col in cashfree.columns:
+                                merged[f"CF_{col}"] = cf_row[col]
+                            for col in acme.columns:
+                                merged[f"INTERNAL_{col}"] = acme_clean.loc[best_match, col]
+                            
+                            merged["MATCH_TYPE"] = "FUZZY MATCH"
+                            merged["MATCH_SCORE"] = f"{best_score}%"
+                            
+                            results.append(merged)
+                            fuzzy_match_count += 1
+                            matched = True
+
+                # =================================================
+                # 3. SPLIT MATCH (If enabled)
+                # =================================================
+
+                if not matched and enable_split_matching:
+
+                    candidates = acme_clean[
+                        (acme_clean["mobile"] == phone) &
+                        (acme_clean["USED"] == False)
                     ]
 
+                    # Apply date tolerance for split matching
+                    if date_tolerance_days > 0 and date:
+                        candidates = candidates[
+                            candidates["MATCH_DATE"].apply(
+                                lambda x: abs((date - x).days) <= date_tolerance_days if pd.notna(x) else False
+                            )
+                        ]
+
                     indices = list(candidates.index)
+
                     found_combo = None
 
-                    for r in range(2, min(6, len(indices) + 1)):
+                    # Limit combinations for performance
+                    max_split = min(10, len(indices))
+                    
+                    for r in range(2, max_split + 1):
+                        
+                        # Only check if r is reasonable (max 3-4 splits typically)
+                        if r > 5:
+                            break
+                            
                         for combo in combinations(indices, r):
+
                             total = round(
-                                acme.loc[
+                                acme_clean.loc[
                                     list(combo),
                                     "payment_amount"
                                 ].sum(),
                                 2
                             )
-                            if total == amount:
+
+                            # Check amount with tolerance
+                            if abs(total - amount) <= amount_tolerance:
                                 found_combo = combo
                                 break
+
                         if found_combo:
                             break
 
                     if found_combo:
-                        acme.loc[
+
+                        acme_clean.loc[
                             list(found_combo),
                             "USED"
                         ] = True
 
-                        for _, row in acme.loc[
+                        for _, row in acme_clean.loc[
                             list(found_combo)
                         ].iterrows():
+
                             merged = {}
+
                             for col in cashfree.columns:
                                 merged[f"CF_{col}"] = cf_row[col]
+
                             for col in acme.columns:
                                 merged[f"INTERNAL_{col}"] = row[col]
+
                             merged["MATCH_TYPE"] = "SPLIT MATCH"
+                            merged["MATCH_SCORE"] = "N/A"
+
                             results.append(merged)
 
                         split_match_count += 1
                         matched = True
 
                 # =================================================
-                # UNMATCHED
+                # 4. UNMATCHED
                 # =================================================
 
                 if not matched:
+
                     merged = {}
+
                     for col in cashfree.columns:
                         merged[f"CF_{col}"] = cf_row[col]
+
                     merged["MATCH_TYPE"] = "UNMATCHED"
+                    merged["MATCH_SCORE"] = "0%"
+
                     results.append(merged)
+
                     unmatched_count += 1
 
-                # Update progress
-                progress_bar.progress((idx + 1) / total_rows)
-
-            # Clear progress bar
-            progress_bar.empty()
-
-        # ====================================================
-        # FINAL DATAFRAME
-        # ====================================================
-
-        final_df = pd.DataFrame(results)
-
-        # ====================================================
-        # ADVANCED DASHBOARD (Modern Metrics)
-        # ====================================================
-
-        st.markdown('<div class="metric-grid">', unsafe_allow_html=True)
-
-        # Metric 1: Exact Matches
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-icon">✅</div>
-            <div class="metric-title">Exact Matches</div>
-            <div class="metric-value">{exact_match_count}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Metric 2: Split Matches
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-icon">🔗</div>
-            <div class="metric-title">Split Matches</div>
-            <div class="metric-value">{split_match_count}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Metric 3: Unmatched
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-icon">❌</div>
-            <div class="metric-title">Unmatched Records</div>
-            <div class="metric-value">{unmatched_count}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # ====================================================
-        # RESULT TABLE
-        # ====================================================
-
-        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown("### 📄 Reconciliation Results")
-        st.markdown("---")
-
-        # Add match type badges for better visualization
-        def add_badges(df):
-            if not df.empty and "MATCH_TYPE" in df.columns:
-                df_display = df.copy()
-                df_display["MATCH_TYPE"] = df_display["MATCH_TYPE"].apply(
-                    lambda x: f'<span class="{"exact-badge" if x == "EXACT MATCH" else "split-badge" if x == "SPLIT MATCH" else "unmatched-badge"}">{x}</span>'
-                )
-                return df_display
-            return df
-
-        final_df_display = add_badges(final_df)
-        st.dataframe(
-            final_df,
-            use_container_width=True,
-            height=500
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # ====================================================
-        # EXPORT SECTION
-        # ====================================================
-
-        st.markdown('<div class="modern-card">', unsafe_allow_html=True)
-        st.markdown("### 💾 Export Results")
-        st.markdown("---")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            output = BytesIO()
-            with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-                final_df.to_excel(writer, index=False)
+            # ====================================================
+            # FIND ORPHANED INTERNAL TRANSACTIONS
+            # ====================================================
             
-            st.download_button(
-                "📊 Download Excel Report",
-                data=output.getvalue(),
-                file_name="reconciliation_output.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                use_container_width=True
+            orphaned = acme_clean[acme_clean["USED"] == False].copy()
+            
+            for _, row in orphaned.iterrows():
+                merged = {}
+                for col in acme.columns:
+                    merged[f"INTERNAL_{col}"] = row[col]
+                merged["MATCH_TYPE"] = "ORPHANED (Not in Cashfree)"
+                merged["MATCH_SCORE"] = "0%"
+                results.append(merged)
+
+            # ====================================================
+            # FINAL DATAFRAME
+            # ====================================================
+
+            final_df = pd.DataFrame(results)
+
+            # ====================================================
+            # ADVANCED DASHBOARD
+            # ====================================================
+
+            st.subheader("📊 Reconciliation Dashboard")
+            
+            total_matched = exact_match_count + fuzzy_match_count + split_match_count
+            total_cf_transactions = len(cashfree_clean)
+            orphaned_count = len(orphaned)
+            
+            match_percentage = (total_matched / total_cf_transactions * 100) if total_cf_transactions > 0 else 0
+
+            col1, col2, col3, col4, col5 = st.columns(5)
+
+            with col1:
+                st.metric("✅ Exact Matches", exact_match_count)
+            
+            with col2:
+                st.metric("🟡 Fuzzy Matches", fuzzy_match_count)
+            
+            with col3:
+                st.metric("🔗 Split Matches", split_match_count)
+            
+            with col4:
+                st.metric("❌ Unmatched", unmatched_count)
+            
+            with col5:
+                st.metric("📊 Match Rate", f"{match_percentage:.1f}%")
+
+            st.divider()
+            
+            # Summary statistics
+            col1, col2 = st.columns(2)
+            with col1:
+                st.info(f"💰 **Cashfree Total Amount:** ₹{cashfree_clean['Amount'].sum():,.2f}")
+            with col2:
+                st.info(f"💰 **Internal Total Amount:** ₹{acme_clean['payment_amount'].sum():,.2f}")
+
+            # ====================================================
+            # RESULT TABLE WITH FILTERS
+            # ====================================================
+
+            st.subheader("📄 Reconciliation Result")
+            
+            # Add filters
+            filter_type = st.multiselect(
+                "Filter by Match Type",
+                options=final_df["MATCH_TYPE"].unique(),
+                default=final_df["MATCH_TYPE"].unique()
+            )
+            
+            filtered_df = final_df[final_df["MATCH_TYPE"].isin(filter_type)]
+            
+            st.dataframe(
+                filtered_df,
+                use_container_width=True,
+                height=500
             )
 
-        with col2:
-            st.download_button(
-                "📄 Download CSV Report",
-                data=final_df.to_csv(index=False).encode('utf-8'),
-                file_name="reconciliation_output.csv",
-                mime="text/csv",
-                use_container_width=True
-            )
+            # ====================================================
+            # EXPORT
+            # ====================================================
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # ====================================================
-        # SUMMARY STATISTICS
-        # ====================================================
-
-        with st.expander("📈 Detailed Statistics"):
-            total_transactions = len(cashfree)
-            matched_total = exact_match_count + split_match_count
-            match_rate = (matched_total / total_transactions * 100) if total_transactions > 0 else 0
+            st.subheader("💾 Export Results")
             
             col1, col2, col3 = st.columns(3)
+            
             with col1:
-                st.metric("Total Transactions", total_transactions)
+                output = BytesIO()
+                with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+                    filtered_df.to_excel(writer, index=False, sheet_name="Reconciliation")
+                    
+                    # Add summary sheet
+                    summary_data = {
+                        "Metric": ["Exact Matches", "Fuzzy Matches", "Split Matches", "Unmatched", "Orphaned", "Match Rate", "Cashfree Total", "Internal Total"],
+                        "Value": [exact_match_count, fuzzy_match_count, split_match_count, unmatched_count, orphaned_count, f"{match_percentage:.1f}%", 
+                                 f"₹{cashfree_clean['Amount'].sum():,.2f}", f"₹{acme_clean['payment_amount'].sum():,.2f}"]
+                    }
+                    summary_df = pd.DataFrame(summary_data)
+                    summary_df.to_excel(writer, index=False, sheet_name="Summary")
+                
+                st.download_button(
+                    "📊 Download Excel Report",
+                    data=output.getvalue(),
+                    file_name="reconciliation_report.xlsx",
+                    type="primary"
+                )
+            
             with col2:
-                st.metric("Matched Transactions", matched_total)
+                st.download_button(
+                    "📄 Download CSV",
+                    data=filtered_df.to_csv(index=False).encode(),
+                    file_name="reconciliation_output.csv"
+                )
+            
             with col3:
-                st.metric("Match Rate", f"{match_rate:.1f}%")
+                st.download_button(
+                    "📋 Download Unmatched Only",
+                    data=filtered_df[filtered_df["MATCH_TYPE"] == "UNMATCHED"].to_csv(index=False).encode(),
+                    file_name="unmatched_transactions.csv"
+                )
 
-elif cashfree_file or acme_file:
-    st.warning("⚠️ Please upload both files (Cashfree and Internal) to proceed.")
-
-# ============================================================
-# FOOTER
-# ============================================================
-
-st.markdown("""
-<div class="footer">
-    <hr class="custom-divider">
-    <p>🔐 Secure Reconciliation • Smart Split Matching • Real-time Processing</p>
-    <p style="font-size: 0.7rem;">Cashfree Reconciliation Suite v2.0</p>
-</div>
-""", unsafe_allow_html=True)
+else:
+    st.info("👈 Please upload both Cashfree and Internal files to begin reconciliation")
